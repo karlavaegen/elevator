@@ -39,24 +39,26 @@
 
             elevator.on("floor_button_pressed", function(floorNum){
                 elevator.smartQueue(floorNum);
+                console.log("elevator " + i + " was queued to " + floorNum + " by internal button press");
             });
 
             elevator.on("idle", function(){
                 console.log(elevators.indexOf(this) + ": was stuck for some reason");
-                this.goToFloor(1,true);
             });
         }
 
-        for(var j = 0; j < floors.length; j++){
+        for(var j = 0; j < floors.length; ++j){
             var floor = floors[j];
             floor.on("up_button_pressed", function(){
                 for(var i = 0; i < elevators.length; i++){
                     elevators[i].smartQueue(floor.floorNum());
+                    console.log("elevator " + i + " was queued by up button on floor " + floor.floorNum());
                 }
             });
             floor.on("down_button_pressed", function(){
                 for(var i = 0; i < elevators.length; i++){
                     elevators[i].smartQueue(floor.floorNum());
+                    console.log("elevator " + i + " was queued by down button on floor " + floor.floorNum());
                 }
             });
         }
