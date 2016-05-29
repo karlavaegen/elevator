@@ -5,7 +5,7 @@
             var elevator = elevators[i];
 
             elevator.smartQueue = function(floorNum){
-                var queue = elevator.destinationQueue;
+                var queue = this.destinationQueue;
                 if(queue.indexOf(floorNum) === -1){
                     queue.push(floorNum);
                 }
@@ -13,56 +13,55 @@
                     return self.indexOf(value) === index;
                 });
 
-                if(elevator.destinationDirection() === "stopped"){
-                    queue = queue.filter(function(value){
-                        return value != elevator.currentFloor();
-                    });
-                }
-                else if(elevator.destinationDirection() === "up"){
+                if(this.destinationDirection() === "up"){
                     queue.sort();
-                    for(var i = 0; i < queue; i++){
-                        if(queue[i] < elevator.currentFloor()){
-                            queue.push(queue.splice(i, 1));
+                    for(var j = 0; j < queue.length; j++){
+                        if(queue[j] < this.currentFloor()){
+                            queue.push(queue.splice(j, 1));
                         }
                     }
                 }
-                else {
+                else if (this.destinationDirection() === "down"){
                     queue.sort(function(a,b){
                         return b - a;
                     });
-                    for(var i = 0; i < queue; i++){
-                        if(queue[i] > elevator.currentFloor()){
-                            queue.push(queue.splice(i, 1));
+                    for(var j = 0; j < queue.length; j++){
+                        if(queue[j] > this.currentFloor()){
+                            queue.push(queue.splice(j, 1));
                         }
                     }
                 }
 
-                console.log(elevator.destinationQueue);
-                elevator.checkDestinationQueue();
+                console.log(elevators.indexOf(this) + ": " + this.destinationQueue.toString());
+                this.checkDestinationQueue();
             }
 
-
-            for(var i = 0; i < floors.length; i++){
-                var floor = floors[i];
-                floor.on("up_button_pressed", function(){
-                    elevator.smartQueue(floor.floorNum());
-                });
-                floor.on("down_button_pressed", function(){
-                    elevator.smartQueue(floor.floorNum());
-                });
-            }
 
             elevator.on("floor_button_pressed", function(floorNum){
                 elevator.smartQueue(floorNum);
             });
 
             elevator.on("idle", function(){
-                console.log("was stuck for some reason");
-                elevator.goToFloor(0);
+                console.log(elevators.indexOf(this) + ": was stuck for some reason");
+                this.goToFloor(1,true);
             });
         }
+
+        for(var j = 0; j < floors.length; j++){
+            var floor = floors[j];
+            floor.on("up_button_pressed", function(){
+                for(var i = 0; i < elevators.length; i++){
+                    elevators[i].smartQueue(floor.floorNum());
+                }
+            });
+            floor.on("down_button_pressed", function(){
+                for(var i = 0; i < elevators.length; i++){
+                    elevators[i].smartQueue(floor.floorNum());
+                }
+            });
+        }
+
     },
     update: function(dt, elevators, floors) {
-        // We normally don't need to do anything here
     }
 }
