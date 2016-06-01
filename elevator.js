@@ -33,14 +33,21 @@
         }
 
         for(var j = 0; j < floors.length; j++){
-            var floor = floors[j];
-            floor.addEventListener("up_button_pressed", function(){
+            var floor = floors.reduce(function(a,b){
+                if(a.floorNum() === j){
+                    return a;
+                }
+                else {
+                    return b;
+                }
+            });
+            floor.on("up_button_pressed", function(){
                 for(var i = 0; i < elevators.length; i++){
                     elevators[i].goToFloor(floor.floorNum());
                     console.log("elevator " + i + " was queued by up button on floor " + floor.floorNum());
                 }
             });
-            floor.addEventListener("down_button_pressed", function(){
+            floor.on("down_button_pressed", function(){
                 for(var i = 0; i < elevators.length; i++){
                     elevators[i].goToFloor(floor.floorNum());
                     console.log("elevator " + i + " was queued by down button on floor " + floor.floorNum());
