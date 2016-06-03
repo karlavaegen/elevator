@@ -2,10 +2,10 @@
     init: function(elevators, floors) {
 
         for(var i = 0; i < elevators.length; i++){
-            elevators[i].goToFloor(i);
+            // elevators[i].goToFloor(i);
 
-            elevators[i].smartQueue = function(floorNum){
-                if(this.loadFactor() === 1){ return; }
+            elevators[i].smartQueue = function(floorNum, skip=false){
+                if(this.loadFactor() === 1 && skip === true){ return; }
                 var queue = this.destinationQueue;
                 if(queue.indexOf(floorNum) === -1){
                     queue.push(floorNum);
@@ -38,7 +38,7 @@
             }
 
             elevators[i].on("floor_button_pressed", function(floorNum){
-                this.goToFloor(floorNum, true);
+                this.smartQueue(floorNum, true);
             });
 
             // elevators[i].on("passing_floor", function(floorNum){
@@ -49,6 +49,9 @@
             //     }
             // });
 
+            elevators[i].on("idle", function(){
+                this.goToFloor(0);
+            });
         }
 
         for(var j = 0; j < floors.length; j++){
