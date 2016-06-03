@@ -2,9 +2,7 @@
     init: function(elevators, floors) {
 
         for(var i = 0; i < elevators.length; i++){
-            var elevator = elevators[i];
-
-            elevator.smartQueue = function(floorNum){
+            elevators[i].smartQueue = function(floorNum){
                 var queue = this.destinationQueue;
                 if(queue.indexOf(floorNum) === -1){
                     queue.push(floorNum);
@@ -37,26 +35,28 @@
             }
 
 
-            elevator.on("floor_button_pressed", function(floorNum){
-                elevator.smartQueue(floorNum);
+            elevators[i].on("floor_button_pressed", function(floorNum){
+                this.goToFloor(floorNum, true);
             });
 
         }
 
         for(var j = 0; j < floors.length; j++){
             floors[j].on("up_button_pressed", function(){
-                for(var i = 0; i < elevators.length; i++){
-                    elevators[i].smartQueue(this.floorNum());
+                var nonfulls = elevators.filter(function(x){ if(x.loadFactor() < 1){ return true;}});
+                for(var i = 0; i < nonfulls.length; i++){
+                    nonfulls[i].smartQueue(this.floorNum());
                 }
             });
             floors[j].on("down_button_pressed", function(){
-                for(var i = 0; i < elevators.length; i++){
-                    elevators[i].smartQueue(this.floorNum());
+                var nonfulls = elevators.filter(function(x){ if(x.loadFactor() < 1){ return true;}});
+                for(var i = 0; i < nonfulls.length; i++){
+                    nonfulls[i].smartQueue(this.floorNum());
                 }
             });
         }
 
     },
-    update: function(dt, elevators, floors) {
-    }
+        update: function(dt, elevators, floors) {
+        }
 }
