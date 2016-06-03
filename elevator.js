@@ -41,13 +41,13 @@
                 this.goToFloor(floorNum, true);
             });
 
-            elevators[i].on("passing_floor", function(floorNum){
-                var is_dest = this.destinationQueue.filter(function(x){ x === floorNum });
-                if(is_dest.length > 0){
-                    this.stop();
-                    console.log("elevator " + i + "stopping on the way at floor " + floorNum);
-                }
-            });
+            // elevators[i].on("passing_floor", function(floorNum){
+            //     var is_dest = this.destinationQueue.filter(function(x){ return x === floorNum });
+            //     if(is_dest.length > 0){
+            //         this.goToFloor(floorNum, true);
+            //         console.log("elevator " + elevators.indexOf(this) + " stopping on the way at floor " + floorNum);
+            //     }
+            // });
 
         }
 
