@@ -3,6 +3,7 @@
 
         for(var i = 0; i < elevators.length; i++){
             elevators[i].smartQueue = function(floorNum){
+                if(this.loadFactor() === 1){ return; }
                 var queue = this.destinationQueue;
                 if(queue.indexOf(floorNum) === -1){
                     queue.push(floorNum);
@@ -43,15 +44,13 @@
 
         for(var j = 0; j < floors.length; j++){
             floors[j].on("up_button_pressed", function(){
-                var nonfulls = elevators.filter(function(x){ if(x.loadFactor() < 1){ return true;}});
-                for(var i = 0; i < nonfulls.length; i++){
-                    nonfulls[i].smartQueue(this.floorNum());
+                for(var i = 0; i < elevators.length; i++){
+                    elevators[i].smartQueue(this.floorNum());
                 }
             });
             floors[j].on("down_button_pressed", function(){
-                var nonfulls = elevators.filter(function(x){ if(x.loadFactor() < 1){ return true;}});
-                for(var i = 0; i < nonfulls.length; i++){
-                    nonfulls[i].smartQueue(this.floorNum());
+                for(var i = 0; i < elevators.length; i++){
+                    elevators[i].smartQueue(this.floorNum());
                 }
             });
         }
