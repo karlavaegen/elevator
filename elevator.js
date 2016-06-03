@@ -4,49 +4,58 @@
         for(var i = 0; i < elevators.length; i++){
             var elevator = elevators[i];
 
-            elevator.on("passing_floor", function(floorNum, direction){
+            elevator.smartQueue = function(floorNum){
                 var queue = this.destinationQueue;
+                if(queue.indexOf(floorNum) === -1){
+                    queue.push(floorNum);
+                }
                 queue = queue.filter(function(value, index, self){
                     return self.indexOf(value) === index;
                 });
 
-                if(queue.indexOf(floorNum) > -1){
-                    this.goToFloor(floorNum, true);
-                    queue = queue.filter(function(x){
-                        x != floorNum;
-                    });
-                    this.checkDestinationQueue();
+                if(this.destinationDirection() === "up"){
+                    queue.sort();
+                    for(var j = 0; j < queue.length; j++){
+                        if(queue[j] < this.currentFloor()){
+                            queue.push(queue.splice(j, 1));
+                        }
+                    }
                 }
+                else if (this.destinationDirection() === "down"){
+                    queue.sort(function(a,b){
+                        return b - a;
+                    });
+                    for(var j = 0; j < queue.length; j++){
+                        if(queue[j] > this.currentFloor()){
+                            queue.push(queue.splice(j, 1));
+                        }
+                    }
+                }
+
                 console.log(elevators.indexOf(this) + ": " + this.destinationQueue.toString());
-            });
+                this.checkDestinationQueue();
+            }
 
 
             elevator.on("floor_button_pressed", function(floorNum){
-                this.goToFloor(floorNum);
-                console.log("elevator " + i + " was queued to " + floorNum + " by internal button press");
+                elevator.smartQueue(floorNum);
             });
 
+            elevator.on("idle", function(){
+                console.log(elevators.indexOf(this) + ": was stuck for some reason");
+                this.goToFloor(1,true);
+            });
         }
 
         for(var j = 0; j < floors.length; j++){
-            var floor = floors.reduce(function(a,b){
-                if(a.floorNum() === j){
-                    return a;
-                }
-                else {
-                    return b;
+            floors[j].on("up_button_pressed", function(){
+                for(var i = 0; i < elevators.length; i++){
+                    elevators[i].smartQueue(this.floorNum());
                 }
             });
-            floor.on("up_button_pressed", function(){
+            floors[j].on("down_button_pressed", function(){
                 for(var i = 0; i < elevators.length; i++){
-                    elevators[i].goToFloor(this.floorNum());
-                    console.log("elevator " + i + " was queued by up button on floor " + this.floorNum());
-                }
-            });
-            floor.on("down_button_pressed", function(){
-                for(var i = 0; i < elevators.length; i++){
-                    elevators[i].goToFloor(this.floorNum());
-                    console.log("elevator " + i + " was queued by down button on floor " + this.floorNum());
+                    elevators[i].smartQueue(this.floorNum());
                 }
             });
         }
