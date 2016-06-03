@@ -26,10 +26,6 @@
                 console.log("elevator " + i + " was queued to " + floorNum + " by internal button press");
             });
 
-            elevator.on("idle", function(){
-                this.goToFloor(0);
-                this.goToFloor(floors[floors.length - 1].floorNum());
-            })
         }
 
         for(var j = 0; j < floors.length; j++){
@@ -43,14 +39,14 @@
             });
             floor.on("up_button_pressed", function(){
                 for(var i = 0; i < elevators.length; i++){
-                    elevators[i].goToFloor(floor.floorNum());
-                    console.log("elevator " + i + " was queued by up button on floor " + floor.floorNum());
+                    elevators[i].goToFloor(this.floorNum());
+                    console.log("elevator " + i + " was queued by up button on floor " + this.floorNum());
                 }
             });
             floor.on("down_button_pressed", function(){
                 for(var i = 0; i < elevators.length; i++){
-                    elevators[i].goToFloor(floor.floorNum());
-                    console.log("elevator " + i + " was queued by down button on floor " + floor.floorNum());
+                    elevators[i].goToFloor(this.floorNum());
+                    console.log("elevator " + i + " was queued by down button on floor " + this.floorNum());
                 }
             });
         }
