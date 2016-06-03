@@ -2,6 +2,8 @@
     init: function(elevators, floors) {
 
         for(var i = 0; i < elevators.length; i++){
+            elevators[i].goToFloor(i);
+
             elevators[i].smartQueue = function(floorNum){
                 if(this.loadFactor() === 1){ return; }
                 var queue = this.destinationQueue;
@@ -35,9 +37,16 @@
                 this.checkDestinationQueue();
             }
 
-
             elevators[i].on("floor_button_pressed", function(floorNum){
                 this.goToFloor(floorNum, true);
+            });
+
+            elevators[i].on("passing_floor", function(floorNum){
+                var is_dest = this.destinationQueue.filter(function(x){ x === floorNum });
+                if(is_dest.length > 0){
+                    this.stop();
+                    console.log("elevator " + i + "stopping on the way at floor " + floorNum);
+                }
             });
 
         }
