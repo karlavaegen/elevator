@@ -41,10 +41,6 @@
                 elevator.smartQueue(floorNum);
             });
 
-            elevator.on("idle", function(){
-                console.log(elevators.indexOf(this) + ": was stuck for some reason");
-                this.goToFloor(1,true);
-            });
         }
 
         for(var j = 0; j < floors.length; j++){
